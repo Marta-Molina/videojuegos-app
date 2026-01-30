@@ -1,0 +1,383 @@
+/* Reset y tipografía */
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(180deg, #0b0b10 0%, #0f0d18 100%);
+  color: #e6e6f0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Contenedor principal */
+div#root > div {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(20,16,30,0.6), rgba(10,8,18,0.6));
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(5,3,20,0.6);
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+/* Filtros */
+.filters-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.filter-box {
+  flex: 1 1 320px;
+  background: linear-gradient(180deg, rgba(30,20,50,0.35), rgba(18,12,30,0.35));
+  border: 1px solid rgba(128, 90, 200, 0.12);
+  padding: 14px;
+  border-radius: 10px;
+}
+
+.filter-title {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: #f0eaff;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.filtro-categorias,
+.filtro-plataformas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filtro-categorias label,
+.filtro-plataformas label {
+  background-color: rgba(255,255,255,0.03);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #e6def8;
+  border: 1px solid rgba(255,255,255,0.03);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filtro-categorias input[type="checkbox"],
+.filtro-plataformas input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #b86bff; /* purple accent */
+}
+
+/* Buscador */
+.buscador input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 18px;
+  font-size: 16px;
+  background: rgba(255,255,255,0.02);
+  color: #f3eaff;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(139, 0, 255, 0.04) inset;
+}
+
+.buscador input::placeholder {
+  color: #cdbef3;
+}
+
+/* Lista de videojuegos */
+.videojuego-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+/* Tarjeta de videojuego */
+.videojuego-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(200,150,255,0.06);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative; /* needed so precio-badge is positioned inside the card */
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+}
+
+/* Badge de precio en la esquina */
+.precio-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(90deg, #ff4db8 0%, #b86bff 100%);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(184,107,255,0.18);
+  z-index: 3;
+  font-size: 13px;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+/* Mostrar badge solo al hacer hover sobre la tarjeta */
+.videojuego-card:hover .precio-badge {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.videojuego-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(139, 0, 255, 0.12);
+}
+
+.videojuego-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+
+.videojuego-card .contenido {
+  padding: 12px;
+  text-align: left;
+}
+
+.videojuego-card h3 {
+  margin: 6px 0 6px 0;
+  font-size: 18px;
+  color: #fff;
+}
+
+.videojuego-card p {
+  font-size: 13px;
+  color: #daceff;
+  margin: 4px 0;
+}
+
+.precio {
+  font-weight: 700;
+  color: #ff8bd8; /* pink accent */
+}
+
+/* Modal de videojuego */
+
+.videojuego-detalle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(5,3,12,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.videojuego-detalle .contenido {
+  background: linear-gradient(180deg, rgba(18,12,28,0.95), rgba(8,6,12,0.95));
+  padding: 20px;
+  border-radius: 12px;
+  width: 92%;
+  max-width: 760px;
+  max-height: 92%;
+  overflow-y: auto;
+  position: relative;
+  border: 1px solid rgba(160, 100, 240, 0.08);
+}
+
+.videojuego-detalle button.cerrar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.videojuego-detalle button.eliminar {
+  background: #e91e63;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* Imagen dentro del modal */
+.videojuego-detalle img {
+  display: block;
+  margin: 10px auto;
+  max-width: 100%;
+  border-radius: 5px;
+}
+
+/* Enlaces */
+.videojuego-detalle a {
+  color: #b38bff;
+  text-decoration: none;
+}
+
+.videojuego-detalle a:hover {
+  text-decoration: underline;
+}
+
+/* Título principal */
+h1 {
+  color: #f7f3ff;
+  text-align: left;
+  margin: 6px 0 18px 0;
+}
+
+h2 {
+  color: #e7dbff;
+  text-align: left;
+  margin: 18px 0 10px 0;
+}
+
+/* Small responsive tweaks */
+@media (max-width: 800px) {
+  .filters-container { flex-direction: column; }
+  .filter-box { width: 100%; }
+}
+
+/* Estilos para selector de orden */
+.sort-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 14px 0;
+  justify-content: flex-start;
+}
+
+.sort-label {
+  color: #d9ccff;
+  font-size: 14px;
+}
+
+.sort-container select {
+  background: rgba(255,255,255,0.02);
+  color: #efe8ff;
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.sort-container select:focus {
+  box-shadow: 0 6px 20px rgba(184,107,255,0.08);
+}
+
+.sort-container select {
+  background: rgba(0,0,0,0.5);
+  color: #efe8ff;
+}
+
+/* Footer */
+.app-footer {
+  margin-top: 28px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  color: #cfc1ff;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Hero / banner full-width underneath the main title */
+.hero-banner {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  border-radius: 8px;
+  margin-top: 12px;
+  margin-bottom: 18px;
+}
+
+.hero-slide {
+  position: relative;
+  height: 220px; /* un poco más grande */
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(12,8,20,0.55), rgba(12,8,20,0.25));
+}
+
+.hero {
+  position: relative;
+  height: 70vh;              /* ajusta si quieres más/menos alto */
+  min-height: 420px;
+  display: flex;
+  align-items: center;       /* centra vertical */
+  justify-content: center;   /* centra horizontal */
+}
+
+.hero-inner {
+  max-width: 1200px;
+  padding: 20px;
+  text-align: center;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.hero-title {
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+   color: #ffffff;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.hero-sub {
+  display: inline-block;
+  margin-bottom: 18px;
+  padding: 8px 18px;
+  border-radius: 999px;              /* píldora */
+  border: 1px solid rgba(255,255,255,0.85);
+  color: rgba(255,255,255,0.95);
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.05); /* opcional, muy sutil */
+  backdrop-filter: blur(4px);         /* glass effect */
+}
+
+/* Flechas del carrusel */
+.hero-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.hero-arrow.left { left: 14px; }
+.hero-arrow.right { right: 14px; }
+
+.hero-arrow:hover { background: rgba(0,0,0,0.45); }

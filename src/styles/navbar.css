@@ -1,0 +1,129 @@
+/* NavBar styles adapted to the project's dark theme */
+
+/* Reserve space so fixed header doesn't overlap content */
+body {
+  padding-top: 80px; /* header height + spacing */
+}
+
+.app-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(18,12,28,0.95);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  z-index: 999;
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo a {
+  font-size: 1.35rem;
+  color: #f3eaff;
+  text-decoration: none;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-link {
+  position: relative;
+  color: #d9ccff;
+  text-decoration: none;
+  font-size: 0.98rem;
+  margin-left: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  transition: color 160ms ease, background 160ms ease, transform 120ms ease;
+}
+
+.nav-link:hover {
+  color: #ffffff;
+  background: rgba(255,255,255,0.03);
+  transform: translateY(-2px);
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  bottom: 6px;
+  width: calc(100% - 20px);
+  height: 2px;
+  background: linear-gradient(90deg,#b86bff,#ff6fb6);
+  border-radius: 3px;
+  transform-origin: right;
+  transform: scaleX(0);
+  transition: transform 240ms ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  transform-origin: left;
+  transform: scaleX(1);
+}
+
+.add-link {
+  background: linear-gradient(90deg, rgba(184,107,255,0.12), rgba(255,77,184,0.08));
+  border: 1px solid rgba(184,107,255,0.18);
+  color: #fff !important;
+  font-weight: 700;
+  padding: 8px 12px;
+}
+
+.nav-user {
+  color: #d9ccff;
+  margin-left: 12px;
+  font-size: 0.95rem;
+}
+
+.nav-logout {
+  margin-left: 10px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #f3eaff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.nav-logout:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+/* Style for the 'Añadir un videojuego nuevo' button under the list */
+.add-video-button {
+  background: linear-gradient(90deg, rgba(184,107,255,0.14), rgba(139,0,255,0.08));
+  border: 1px solid rgba(184,107,255,0.16);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease, opacity 120ms ease;
+}
+
+.add-video-button:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(184,107,255,0.12);
+}
+
+/* Small responsive tweak */
+@media (max-width: 720px) {
+  .nav-inner { padding: 10px 14px; }
+  .nav-right { gap: 8px; }
+  body { padding-top: 72px; }
+}
