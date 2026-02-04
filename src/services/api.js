@@ -72,7 +72,18 @@ export const registerUser = async (user) => {
     const res = await axios.post(`${API_URL}/register`, user);
     return res.data;
   } catch (error) {
-    console.error("Error en register:", error?.response?.data || error.message);
+    console.error("Error en register (trying fallback):", error?.response?.data || error.message);
+    // Fallback: if json-server-auth is not present, create a user directly in /users
+    if (error?.response?.status === 404) {
+      try {
+        const res = await axios.post(`${API_URL}/users`, user);
+        // return created user object for the caller to handle (no token)
+        return { user: res.data };
+      } catch (e) {
+        console.error("Fallback register failed:", e?.response?.data || e.message);
+        throw e;
+      }
+    }
     throw error;
   }
 };
@@ -82,7 +93,26 @@ export const loginUser = async (credentials) => {
     const res = await axios.post(`${API_URL}/login`, credentials);
     return res.data; // { accessToken, user }
   } catch (error) {
-    console.error("Error en login:", error?.response?.data || error.message);
+    console.error("Error en login (trying fallback):", error?.response?.data || error.message);
+    // Fallback: if json-server-auth not available, try to find user in /users
+    if (error?.response?.status === 404) {
+      try {
+        const res = await axios.get(`${API_URL}/users`, { params: { email: credentials.email } });
+        const users = res.data || [];
+        const user = users.find((u) => u.email === credentials.email && u.password === credentials.password);
+        if (user) {
+          // Return a fake token so the frontend can treat the user as authenticated.
+          const fakeToken = `local-${btoa(user.email)}`;
+          return { accessToken: fakeToken, user };
+        }
+        const e = new Error('Invalid credentials');
+        e.response = { data: 'Invalid credentials', status: 401 };
+        throw e;
+      } catch (e) {
+        console.error("Fallback login failed:", e?.response?.data || e.message);
+        throw e;
+      }
+    }
     throw error;
   }
 };

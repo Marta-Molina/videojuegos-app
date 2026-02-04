@@ -312,6 +312,9 @@ h2 {
   background-position: center;
   border-radius: 8px;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero-overlay {
@@ -331,6 +334,8 @@ h2 {
 
 .hero-inner {
   max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
   padding: 20px;
   text-align: center;
   z-index: 2;
