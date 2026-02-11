@@ -5,6 +5,7 @@ import CategoriasFilter from "./components/CategoriasFilter";
 import PlataformasFilter from "./components/PlataformasFilter";
 import Buscador from "./components/Buscador";
 import { getVideojuegos, getCategorias, getPlataformas } from "./services/api";
+import Loading from "./components/Loading";
 import { Link } from "react-router-dom";
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
   const [sortOption, setSortOption] = useState("relevance");
   const [videojuegoSeleccionado, setVideojuegoSeleccionado] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   // carrusel imagenes para banner
   const carouselImages = [
@@ -30,6 +32,7 @@ const App = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       const [juegos, cats, plats] = await Promise.all([
         getVideojuegos(),
         getCategorias(),
@@ -58,9 +61,11 @@ const App = () => {
       //Inicializamos filtros como nombres (strings) usando las listas ordenadas
       setSelectedCategorias(sortedCats.map(c => c.nombre));
       setSelectedPlataformas(sortedPlats.map(p => p.nombre));
+      setLoading(false);
     };
     fetchData();
   }, []);
+
 
   //Filtrar videojuegos según nombres de categorías y plataformas
   const videojuegosFiltrados = videojuegos.filter(juego => {
@@ -131,7 +136,8 @@ const App = () => {
         </div>
       </div>
 
-      <div className="filters-container">
+  {loading ? <Loading /> : (
+  <div className="filters-container">
         <div className="filter-box">
           <h3 className="filter-title">Categorías</h3>
           <CategoriasFilter
@@ -149,7 +155,8 @@ const App = () => {
             setSelectedPlataformas={setSelectedPlataformas}
           />
         </div>
-      </div>
+  </div>
+  )}
 
       <Buscador busqueda={busqueda} setBusqueda={setBusqueda} />
 
