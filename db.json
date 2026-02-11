@@ -1,5 +1,12 @@
 {
-  "users": [],
+  "users": [
+    {
+      "email": "www.ruser215@gmail.com",
+      "password": "1234",
+      "name": "ruben",
+      "id": 1
+    }
+  ],
   "videojuegos": [
     {
       "id": 1,

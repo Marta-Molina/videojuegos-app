@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createVideojuego, getCategorias, getPlataformas } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import "./AddVideojuego.css";
 
 const AddVideojuego = () => {
   const [form, setForm] = useState({
@@ -52,49 +53,60 @@ const AddVideojuego = () => {
     <div className="add-video-page">
       <h2>Añadir videojuego</h2>
       <form onSubmit={handleSubmit} className="add-video-form">
-        <label>
-          Nombre
-          <input name="nombre" value={form.nombre} onChange={handleChange} required />
-        </label>
-        <label>
-          Descripción
-          <textarea name="descripcion" value={form.descripcion} onChange={handleChange} />
-        </label>
-        <label>
-          Fecha de lanzamiento
-          <input type="date" name="fechaLanzamiento" value={form.fechaLanzamiento} onChange={handleChange} />
-        </label>
-        <label>
-          Compañía
-          <input name="compania" value={form.compania} onChange={handleChange} />
-        </label>
-        <label>
-          Categorías (ctrl/shift para seleccionar varias)
-          <select multiple name="categorias" onChange={(e) => handleMulti(e, "categorias")}>
-            {categorias.map(c => (
-              <option key={c.id} value={c.id}>{c.nombre}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Plataformas (ctrl/shift para seleccionar varias)
-          <select multiple name="plataformas" onChange={(e) => handleMulti(e, "plataformas")}>
-            {plataformas.map(p => (
-              <option key={p.id} value={p.id}>{p.nombre}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Precio
-          <input type="number" step="0.01" name="precio" value={form.precio} onChange={handleChange} />
-        </label>
-        <label>
-          Imagen (URL)
-          <input name="imagen" value={form.imagen} onChange={handleChange} />
-        </label>
+        <div className="form-grid">
+          <div className="form-field">
+            <label className="label-text">Nombre</label>
+            <input name="nombre" value={form.nombre} onChange={handleChange} required />
+          </div>
 
-        <button type="submit">Crear</button>
-        {error && <div className="error">{String(error)}</div>}
+          <div className="form-field">
+            <label className="label-text">Compañía</label>
+            <input name="compania" value={form.compania} onChange={handleChange} />
+          </div>
+
+          <div className="form-field full-width">
+            <label className="label-text">Descripción</label>
+            <textarea name="descripcion" value={form.descripcion} onChange={handleChange} />
+          </div>
+
+          <div className="form-field">
+            <label className="label-text">Fecha de lanzamiento</label>
+            <input type="date" name="fechaLanzamiento" value={form.fechaLanzamiento} onChange={handleChange} />
+          </div>
+
+          <div className="form-field">
+            <label className="label-text">Precio</label>
+            <input type="number" step="0.01" name="precio" value={form.precio} onChange={handleChange} />
+          </div>
+
+          <div className="form-field full-width">
+            <label className="label-text">Imagen (URL)</label>
+            <input name="imagen" value={form.imagen} onChange={handleChange} />
+          </div>
+
+          <div className="form-field full-width">
+            <label className="label-text">Categorías <span className="hint">(ctrl/shift para seleccionar varias)</span></label>
+            <select multiple name="categorias" onChange={(e) => handleMulti(e, "categorias")} className="multi-select">
+              {categorias.map(c => (
+                <option key={c.id} value={c.id}>{c.nombre}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-field full-width">
+            <label className="label-text">Plataformas <span className="hint">(ctrl/shift para seleccionar varias)</span></label>
+            <select multiple name="plataformas" onChange={(e) => handleMulti(e, "plataformas")} className="multi-select">
+              {plataformas.map(p => (
+                <option key={p.id} value={p.id}>{p.nombre}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="form-actions">
+          <button type="submit" className="primary">Crear</button>
+          {error && <div className="error">{String(error)}</div>}
+        </div>
       </form>
     </div>
   );
