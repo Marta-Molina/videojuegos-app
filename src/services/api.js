@@ -1,7 +1,8 @@
 import axios from "axios";
 
 //Base URL del backend Express con JWT
-const API_URL = "http://localhost:4000/api"; // backend corre en el puerto 4000
+//Base URL del backend json-server con auth
+const API_URL = "http://localhost:5000"; // json-server corre en el puerto 5000
 
 // helper to set auth token globally on axios
 export const setAuthToken = (token) => {
@@ -12,10 +13,11 @@ export const setAuthToken = (token) => {
 //Traer todos los videojuegos
 export const getVideojuegos = async (page = 1, limit = 12) => {
   try {
-    const response = await axios.get(`${API_URL}/videojuegos`, { params: { page, limit } });
-    // backend devuelve { total, page, limit, data }
-    const payload = response.data;
-    return Array.isArray(payload.data) ? payload.data : [];
+    // json-server supports pagination with _page and _limit, but user simplified requests returning array directly is safer if pagination isn't strictly enforced on backend yet or if we just want raw array.
+    // For now, let's just get all or simple pagination if needed. db.json usually returns array directly unless wrapped.
+    // We will assume direct array return for simplicity as json-server default.
+    const response = await axios.get(`${API_URL}/videojuegos`);
+    return response.data;
   } catch (error) {
     console.error("Error al obtener videojuegos:", error);
     return [];
@@ -68,11 +70,11 @@ export const deleteVideojuego = async (id) => {
   }
 };
 
-// Auth: register and login (json-server-auth)
+// Auth: register and login (json-server-auth uses /register and /login)
 export const registerUser = async (user) => {
   try {
-    const res = await axios.post(`${API_URL}/auth/register`, user);
-    return res.data; // { user }
+    const res = await axios.post(`${API_URL}/register`, user);
+    return res.data; // { accessToken, user }
   } catch (error) {
     console.error("Error en register:", error?.response?.data || error.message);
     throw error;
@@ -81,7 +83,7 @@ export const registerUser = async (user) => {
 
 export const loginUser = async (credentials) => {
   try {
-    const res = await axios.post(`${API_URL}/auth/login`, credentials);
+    const res = await axios.post(`${API_URL}/login`, credentials);
     return res.data; // { accessToken, user }
   } catch (error) {
     console.error("Error en login:", error?.response?.data || error.message);

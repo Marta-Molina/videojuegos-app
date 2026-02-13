@@ -72,8 +72,11 @@ const App = () => {
     const nombresCats = juego.categoriasNombres || [];
     const nombresPlats = juego.plataformasNombres || [];
 
-    const enCategoria = nombresCats.some(cat => selectedCategorias.includes(cat));
-    const enPlataforma = nombresPlats.some(plat => selectedPlataformas.includes(plat));
+    const allCatsSelected = selectedCategorias.length === categorias.length;
+    const allPlatsSelected = selectedPlataformas.length === plataformas.length;
+
+    const enCategoria = allCatsSelected || nombresCats.some(cat => selectedCategorias.includes(cat));
+    const enPlataforma = allPlatsSelected || nombresPlats.some(plat => selectedPlataformas.includes(plat));
     const enBusqueda = juego.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
       (juego.descripcion || "").toLowerCase().includes(busqueda.toLowerCase());
 

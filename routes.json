@@ -1,6 +1,6 @@
 {
-  "/videojuegos": 660,
-  "/categorias": 660,
-  "/plataformas": 660,
-  "/users": 640
+  "/videojuegos": "/videojuegos",
+  "/categorias": "/categorias",
+  "/plataformas": "/plataformas",
+  "/users": "/users"
 }
