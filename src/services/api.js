@@ -10,17 +10,24 @@ export const setAuthToken = (token) => {
   else delete axios.defaults.headers.common["Authorization"];
 };
 
-//Traer todos los videojuegos
+//Traer todos los videojuegos (con paginación)
 export const getVideojuegos = async (page = 1, limit = 12) => {
   try {
-    // json-server supports pagination with _page and _limit, but user simplified requests returning array directly is safer if pagination isn't strictly enforced on backend yet or if we just want raw array.
-    // For now, let's just get all or simple pagination if needed. db.json usually returns array directly unless wrapped.
-    // We will assume direct array return for simplicity as json-server default.
-    const response = await axios.get(`${API_URL}/videojuegos`);
-    return response.data;
+    const response = await axios.get(`${API_URL}/videojuegos`, {
+      params: {
+        _page: page,
+        _limit: limit
+      }
+    });
+    // json-server devuelve el total en el header X-Total-Count
+    const totalCount = parseInt(response.headers["x-total-count"] || 0);
+    return {
+      data: response.data,
+      total: totalCount
+    };
   } catch (error) {
     console.error("Error al obtener videojuegos:", error);
-    return [];
+    return { data: [], total: 0 };
   }
 };
 
