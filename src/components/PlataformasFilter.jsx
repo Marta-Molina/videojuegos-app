@@ -1,4 +1,11 @@
 import React from "react";
+import {
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  Typography,
+  Box
+} from '@mui/material';
 
 const PlataformasFilter = ({ plataformas, selectedPlataformas, setSelectedPlataformas }) => {
   const togglePlataforma = (nombre) => {
@@ -10,18 +17,25 @@ const PlataformasFilter = ({ plataformas, selectedPlataformas, setSelectedPlataf
   };
 
   return (
-    <div className="filtro-plataformas">
-      {plataformas.map(plat => (
-        <label key={plat.id}>
-          <input
-            type="checkbox"
-            checked={selectedPlataformas.includes(plat.nombre)}
-            onChange={() => togglePlataforma(plat.nombre)}
+    <Box sx={{ mt: 1 }}>
+      <FormGroup sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 1 }}>
+        {plataformas.map(plat => (
+          <FormControlLabel
+            key={plat.id}
+            control={
+              <Checkbox
+                checked={selectedPlataformas.includes(plat.nombre)}
+                onChange={() => togglePlataforma(plat.nombre)}
+                size="small"
+                color="secondary"
+              />
+            }
+            label={<Typography variant="body2">{plat.nombre}</Typography>}
+            sx={{ mr: 2 }}
           />
-          {plat.nombre}
-        </label>
-      ))}
-    </div>
+        ))}
+      </FormGroup>
+    </Box>
   );
 };
 

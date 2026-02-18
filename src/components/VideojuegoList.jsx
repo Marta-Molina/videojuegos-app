@@ -1,13 +1,16 @@
 import React from "react";
+import { Grid } from '@mui/material';
 import VideojuegoCard from "./VideojuegoCard";
 
 const VideojuegoList = ({ videojuegos, onSelect }) => {
   return (
-    <div className="videojuego-list">
+    <Grid container spacing={4}>
       {videojuegos.map(juego => (
-        <VideojuegoCard key={juego.id} juego={juego} onClick={onSelect} />
+        <Grid item key={juego.id} xs={12} sm={6} md={4} lg={3}>
+          <VideojuegoCard juego={juego} onClick={onSelect} />
+        </Grid>
       ))}
-    </div>
+    </Grid>
   );
 };
 
