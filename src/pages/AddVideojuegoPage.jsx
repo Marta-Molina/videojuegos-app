@@ -1,9 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { createVideojuego, getCategorias, getPlataformas } from "../services/api";
 import { useNavigate } from "react-router-dom";
-import "./AddVideojuego.css";
+import { useAuth } from "../context/AuthContext";
+import {
+  Container,
+  Paper,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Chip,
+  Alert,
+  OutlinedInput,
+  InputAdornment
+} from '@mui/material';
+import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 
-const AddVideojuego = () => {
+const AddVideojuegoPage = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     nombre: "",
     descripcion: "",
@@ -12,19 +32,23 @@ const AddVideojuego = () => {
     plataformas: [],
     categorias: [],
     precio: 0,
-    imagen: ""
+    imagen: "",
+    video: ""
   });
   const [categorias, setCategorias] = useState([]);
   const [plataformas, setPlataformas] = useState([]);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const load = async () => {
-      const cats = await getCategorias();
-      const plats = await getPlataformas();
-      setCategorias(cats);
-      setPlataformas(plats);
+      try {
+        const [cats, plats] = await Promise.all([getCategorias(), getPlataformas()]);
+        setCategorias(cats);
+        setPlataformas(plats);
+      } catch (err) {
+        console.error("Error loading categories/platforms", err);
+      }
     };
     load();
   }, []);
@@ -34,82 +58,212 @@ const AddVideojuego = () => {
     setForm((f) => ({ ...f, [name]: value }));
   };
 
-  const handleMulti = (e, key) => {
-    const val = Array.from(e.target.selectedOptions).map((o) => Number(o.value));
-    setForm((f) => ({ ...f, [key]: val }));
+  const handleSelectChange = (event) => {
+    const { name, value } = event.target;
+    setForm((f) => ({
+      ...f,
+      [name]: typeof value === 'string' ? value.split(',') : value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
     try {
-      await createVideojuego(form);
+      // Validar campos básicos
+      if (form.plataformas.length === 0 || form.categorias.length === 0) {
+        throw new Error("Selecciona al menos una categoría y una plataforma.");
+      }
+
+      await createVideojuego({
+        ...form,
+        precio: parseFloat(form.precio),
+        userId: user?.id // Asociar con el usuario actual
+      });
       navigate("/");
     } catch (err) {
       setError(err?.response?.data || err.message || "Error creando videojuego");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="add-video-page">
-      <h2>Añadir videojuego</h2>
-      <form onSubmit={handleSubmit} className="add-video-form">
-        <div className="form-grid">
-          <div className="form-field">
-            <label className="label-text">Nombre</label>
-            <input name="nombre" value={form.nombre} onChange={handleChange} required />
-          </div>
+    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+          <VideogameAssetIcon color="primary" sx={{ fontSize: 40, mr: 2 }} />
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 700 }}>
+            Añadir Nuevo Videojuego
+          </Typography>
+        </Box>
 
-          <div className="form-field">
-            <label className="label-text">Compañía</label>
-            <input name="compania" value={form.compania} onChange={handleChange} />
-          </div>
+        {error && <Alert severity="error" sx={{ mb: 3 }}>{String(error)}</Alert>}
 
-          <div className="form-field full-width">
-            <label className="label-text">Descripción</label>
-            <textarea name="descripcion" value={form.descripcion} onChange={handleChange} />
-          </div>
+        <Box component="form" onSubmit={handleSubmit}>
+          <Grid container spacing={3}>
+            {/* Fila 1 */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                required
+                fullWidth
+                label="Nombre del Juego"
+                name="nombre"
+                value={form.nombre}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Compañía / Desarrollador"
+                name="compania"
+                value={form.compania}
+                onChange={handleChange}
+              />
+            </Grid>
 
-          <div className="form-field">
-            <label className="label-text">Fecha de lanzamiento</label>
-            <input type="date" name="fechaLanzamiento" value={form.fechaLanzamiento} onChange={handleChange} />
-          </div>
+            {/* Fila 2 - Descripción */}
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                multiline
+                rows={4}
+                label="Descripción"
+                name="descripcion"
+                value={form.descripcion}
+                onChange={handleChange}
+              />
+            </Grid>
 
-          <div className="form-field">
-            <label className="label-text">Precio</label>
-            <input type="number" step="0.01" name="precio" value={form.precio} onChange={handleChange} />
-          </div>
+            {/* Fila 3 */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Fecha de Lanzamiento"
+                type="date"
+                name="fechaLanzamiento"
+                value={form.fechaLanzamiento}
+                onChange={handleChange}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Precio"
+                type="number"
+                name="precio"
+                value={form.precio}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                }}
+              />
+            </Grid>
 
-          <div className="form-field full-width">
-            <label className="label-text">Imagen (URL)</label>
-            <input name="imagen" value={form.imagen} onChange={handleChange} />
-          </div>
+            {/* Fila 4 - Multimedia */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="URL de Imagen"
+                name="imagen"
+                value={form.imagen}
+                placeholder="https://ejemplo.com/imagen.jpg"
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="URL de Video (Youtube/Trailer)"
+                name="video"
+                value={form.video}
+                placeholder="https://youtube.com/..."
+                onChange={handleChange}
+              />
+            </Grid>
 
-          <div className="form-field full-width">
-            <label className="label-text">Categorías <span className="hint">(ctrl/shift para seleccionar varias)</span></label>
-            <select multiple name="categorias" onChange={(e) => handleMulti(e, "categorias")} className="multi-select">
-              {categorias.map(c => (
-                <option key={c.id} value={c.id}>{c.nombre}</option>
-              ))}
-            </select>
-          </div>
+            {/* Fila 5 - Selectores Múltiples */}
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth required>
+                <InputLabel id="categorias-label">Categorías</InputLabel>
+                <Select
+                  labelId="categorias-label"
+                  multiple
+                  name="categorias"
+                  value={form.categorias}
+                  onChange={handleSelectChange}
+                  input={<OutlinedInput label="Categorías" />}
+                  renderValue={(selected) => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selected.map((value) => (
+                        <Chip key={value} label={categorias.find(c => c.id === value)?.nombre || value} size="small" />
+                      ))}
+                    </Box>
+                  )}
+                >
+                  {categorias.map((cat) => (
+                    <MenuItem key={cat.id} value={cat.id}>
+                      {cat.nombre}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
-          <div className="form-field full-width">
-            <label className="label-text">Plataformas <span className="hint">(ctrl/shift para seleccionar varias)</span></label>
-            <select multiple name="plataformas" onChange={(e) => handleMulti(e, "plataformas")} className="multi-select">
-              {plataformas.map(p => (
-                <option key={p.id} value={p.id}>{p.nombre}</option>
-              ))}
-            </select>
-          </div>
-        </div>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth required>
+                <InputLabel id="plataformas-label">Plataformas</InputLabel>
+                <Select
+                  labelId="plataformas-label"
+                  multiple
+                  name="plataformas"
+                  value={form.plataformas}
+                  onChange={handleSelectChange}
+                  input={<OutlinedInput label="Plataformas" />}
+                  renderValue={(selected) => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selected.map((value) => (
+                        <Chip key={value} label={plataformas.find(p => p.id === value)?.nombre || value} size="small" />
+                      ))}
+                    </Box>
+                  )}
+                >
+                  {plataformas.map((plat) => (
+                    <MenuItem key={plat.id} value={plat.id}>
+                      {plat.nombre}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
 
-        <div className="form-actions">
-          <button type="submit" className="primary">Crear</button>
-          {error && <div className="error">{String(error)}</div>}
-        </div>
-      </form>
-    </div>
+          <Box sx={{ mt: 6, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+            <Button
+              variant="outlined"
+              onClick={() => navigate("/")}
+              disabled={loading}
+              sx={{ px: 4 }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              disabled={loading}
+              sx={{ px: 6 }}
+            >
+              {loading ? "Creando..." : "Crear Videojuego"}
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 
-export default AddVideojuego;
+export default AddVideojuegoPage;
